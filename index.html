@@ -11,8 +11,17 @@
                     var marker = this.el;
                     this.vid = document.querySelector("#vid");
 
+                    // Necesario para permitir audio en algunos navegadores
+                    const enableAudio = () => {
+                        this.vid.muted = false;
+                        this.vid.play().catch(e => console.log("Playback error:", e));
+                        document.removeEventListener('click', enableAudio);
+                    };
+                    document.addEventListener('click', enableAudio);
+
                     marker.addEventListener('markerFound', function () {
                         this.toggle = true;
+                        this.vid.muted = false; // asegurarse de que el audio esté habilitado
                         this.vid.play();
                     }.bind(this));
 
@@ -39,13 +48,13 @@
                     id="vid"
                     src="assets/asset.mp4"
                     preload="auto"
-                    response-type="arraybuffer"
                     loop
-                    crossorigin
+                    crossorigin="anonymous"
                     webkit-playsinline
-                    autoplay
-             
                     playsinline
+                    autoplay
+                    muted
+                    controls
                 ></video>
             </a-assets>
 
@@ -77,3 +86,4 @@
         </a-scene>
     </body>
 </html>
+
