@@ -1,34 +1,31 @@
 <!doctype html>
 <html>
     <head>
+        <meta charset="utf-8">
         <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
         <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
         <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-detector.js"></script>
         <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-handler.js"></script>
+
         <script>
             AFRAME.registerComponent('videohandler', {
                 init: function () {
-                    var marker = this.el;
+                    const marker = this.el;
                     this.vid = document.querySelector("#vid");
 
-                    // Necesario para permitir audio en algunos navegadores
-                    const enableAudio = () => {
-                        this.vid.muted = false;
-                        this.vid.play().catch(e => console.log("Playback error:", e));
-                        document.removeEventListener('click', enableAudio);
-                    };
-                    document.addEventListener('click', enableAudio);
-
-                    marker.addEventListener('markerFound', function () {
+                    marker.addEventListener('markerFound', async () => {
                         this.toggle = true;
-                        this.vid.muted = false; // asegurarse de que el audio esté habilitado
-                        this.vid.play();
-                    }.bind(this));
+                        try {
+                            await this.vid.play();
+                        } catch (e) {
+                            console.warn("Error al reproducir el video con sonido:", e);
+                        }
+                    });
 
-                    marker.addEventListener('markerLost', function () {
+                    marker.addEventListener('markerLost', () => {
                         this.toggle = false;
                         this.vid.pause();
-                    }.bind(this));
+                    });
                 },
             });
         </script>
@@ -53,8 +50,6 @@
                     webkit-playsinline
                     playsinline
                     autoplay
-                    muted
-                    controls
                 ></video>
             </a-assets>
 
@@ -86,4 +81,3 @@
         </a-scene>
     </body>
 </html>
-
